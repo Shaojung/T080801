@@ -1,5 +1,7 @@
 package tw.com.pcschool.t080801;
 
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,7 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class MainActivity extends AppCompatActivity {
-
+    File DB_PATH;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -19,18 +21,22 @@ public class MainActivity extends AppCompatActivity {
 
         CopyDatabase();
 
+        SQLiteDatabase db = SQLiteDatabase.openOrCreateDatabase(DB_PATH.toString(), null);
+        Cursor c = db.rawQuery("Select * from contacts", null);
+        c.moveToFirst();
+        do {
+            String str = c.getString(1);
+            Log.d("DB", str);
+        }while(c.moveToNext());
+
     }
 
     private void CopyDatabase() {
         final int BUFFER_SIZE = 400000;
         final String DB_NAME = "test1.sqlite"; // 保存的資料庫檔案名
         String PACKAGE_NAME = getPackageName();
-        File DB_PATH = getDatabasePath(DB_NAME);
-
-        DB_PATH.mkdir();
-
+        DB_PATH = getDatabasePath(DB_NAME);
         Log.d("DB", "DB:" + DB_PATH.toString());
-
 
         try {
             if (!(DB_PATH.exists())) {
